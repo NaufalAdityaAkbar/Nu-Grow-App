@@ -16,6 +16,9 @@ import 'screens/splash_screen.dart';
 import 'services/api_service.dart';
 import 'services/finance_service.dart';
 import 'services/habit_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,10 @@ void main() async {
   Intl.defaultLocale = 'id_ID';
   
   await NotificationService.initialize();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
   runApp(
     MultiProvider(
@@ -39,6 +46,9 @@ void main() async {
         ),
         ChangeNotifierProvider<NavigationProvider>(
           create: (_) => NavigationProvider(),
+        ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(),
         ),
       ],
       child: const MyApp(),

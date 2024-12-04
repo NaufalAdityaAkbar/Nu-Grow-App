@@ -1,0 +1,155 @@
+{
+  "project_info": {
+    "project_number": "1060322466630",
+    "firebase_url": "https://newsapp-4ea2d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "newsapp-4ea2d",
+    "storage_bucket": "newsapp-4ea2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060322466630:android:24e7bd32676d78e1b92347",
+        "android_client_info": {
+          "package_name": "com.company.NuGrow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Mbwkt58izV2pdzpWlpyGKLNo28F85ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1060322466630-bqfnnuio3bqlnao896ekg6dplv00qqus.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nugrow"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060322466630:android:869b311b0d1d41f1b92347",
+        "android_client_info": {
+          "package_name": "com.exampe.nugrowapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Mbwkt58izV2pdzpWlpyGKLNo28F85ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1060322466630-bqfnnuio3bqlnao896ekg6dplv00qqus.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nugrow"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060322466630:android:d05e0cf3bc9a93ceb92347",
+        "android_client_info": {
+          "package_name": "com.example.nugrow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Mbwkt58izV2pdzpWlpyGKLNo28F85ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1060322466630-bqfnnuio3bqlnao896ekg6dplv00qqus.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nugrow"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060322466630:android:0f843c4d3685c9bdb92347",
+        "android_client_info": {
+          "package_name": "com.example.nugrowapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Mbwkt58izV2pdzpWlpyGKLNo28F85ho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1060322466630-01uoccuo8uaveebh0gfdmfcetuknr484.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1060322466630-bqfnnuio3bqlnao896ekg6dplv00qqus.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nugrow"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

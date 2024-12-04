@@ -23,16 +23,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final brightness = Theme.of(context).brightness;
-    
+
     final double horizontalPadding = size.width * 0.05;
     final double verticalPadding = size.height * 0.03;
-    
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -93,13 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           padding: EdgeInsets.all(size.width * 0.05),
                           decoration: BoxDecoration(
-                            color: brightness == Brightness.light 
-                                ? Colors.white 
+                            color: brightness == Brightness.light
+                                ? Colors.white
                                 : Colors.grey[850],
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.colorScheme.primary.withOpacity(0.2),
+                                color:
+                                    theme.colorScheme.primary.withOpacity(0.2),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -110,7 +111,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               Container(
                                 padding: EdgeInsets.all(size.width * 0.04),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withOpacity(0.1),
+                                  color: theme.colorScheme.primary
+                                      .withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -204,7 +206,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String? Function(String?)? validator,
   }) {
     final brightness = Theme.of(context).brightness;
-    
+
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: MediaQuery.of(context).size.height * 0.01,
@@ -214,15 +216,14 @@ class _LoginScreenState extends State<LoginScreen> {
         obscureText: isPassword && !_isPasswordVisible,
         style: TextStyle(
           fontSize: MediaQuery.of(context).size.width * 0.04,
-          color: brightness == Brightness.light 
-              ? Colors.black87 
-              : Colors.white70,
+          color:
+              brightness == Brightness.light ? Colors.black87 : Colors.white70,
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            color: brightness == Brightness.light 
-                ? Colors.grey[600] 
+            color: brightness == Brightness.light
+                ? Colors.grey[600]
                 : Colors.grey[400],
             fontSize: 15,
           ),
@@ -230,7 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                    _isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
@@ -241,14 +244,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               : null,
           filled: true,
-          fillColor: brightness == Brightness.light 
-              ? Colors.grey[50] 
+          fillColor: brightness == Brightness.light
+              ? Colors.grey[50]
               : Colors.grey[800],
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: brightness == Brightness.light 
-                  ? Colors.grey[300]! 
+              color: brightness == Brightness.light
+                  ? Colors.grey[300]!
                   : Colors.grey[700]!,
             ),
           ),
@@ -362,15 +365,19 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      
+
       if (mounted) {
+        // Simpan status login
+        await _authService.saveLoginStatus(true);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
@@ -423,6 +430,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       
       if (success && mounted) {
+        // Simpan status login
+        await _authService.saveLoginStatus(true);
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
@@ -436,4 +446,4 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
     }
   }
-} 
+}

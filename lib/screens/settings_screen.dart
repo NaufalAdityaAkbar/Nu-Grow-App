@@ -7,6 +7,9 @@ import '../providers/theme_provider.dart';
 import 'package:intl/intl.dart';
 import '../constants/app_constants.dart';
 import '../providers/auth_provider.dart';
+import '../services/auth_service.dart';
+import 'login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -47,16 +50,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text(
+              'Keluar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
 
     if (confirmed == true) {
-      await context.read<AuthProvider>().signOut();
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+      try {
+        final authService = AuthService();
+        await authService.signOut();
+        if (mounted) {
+          // Tampilkan snackbar sukses
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Berhasil keluar'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // Navigasi langsung ke LoginScreen
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal keluar: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -211,6 +244,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: () {
                         // TODO: Implement app rating
                       },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildSettingsSection(
+                  'Akun',
+                  [
+                    _buildSettingsCard(
+                      icon: Icons.logout,
+                      title: 'Keluar',
+                      subtitle: 'Keluar dari akun Anda',
+                      onTap: _handleLogout,
                     ),
                   ],
                 ),

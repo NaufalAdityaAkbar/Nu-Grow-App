@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import '../widgets/animated_card.dart';
 import '../main.dart';
 import '../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -31,6 +32,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (success && mounted) {
+        // Simpan status login
+        await _authService.saveLoginStatus(true);
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
@@ -46,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleGoogleSignIn() async {
     try {
       final success = await _authService.signInWithGoogle();
-      
+
       if (success && mounted) {
         Navigator.pushReplacement(
           context,
@@ -65,7 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final brightness = Theme.of(context).brightness;
-    
+
     return Scaffold(
       body: Stack(
         children: [
@@ -228,7 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               isPasswordVisible: _isConfirmPasswordVisible,
                               onTogglePassword: () {
                                 setState(() {
-                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
                                 });
                               },
                               validator: (value) {
@@ -289,9 +294,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         keyboardType: keyboardType,
         style: TextStyle(
           fontSize: 16,
-          color: brightness == Brightness.light
-              ? Colors.black87
-              : Colors.white70,
+          color:
+              brightness == Brightness.light ? Colors.black87 : Colors.white70,
         ),
         decoration: InputDecoration(
           labelText: label,
@@ -336,7 +340,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: Colors.red[400]!, width: 2),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
         validator: validator,
       ),
@@ -429,4 +434,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-} 
+}
