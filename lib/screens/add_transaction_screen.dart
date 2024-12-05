@@ -128,7 +128,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: SegmentedButton<TransactionType>(
-          style: ButtonStyle(
+          style: const ButtonStyle(
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           segments: [

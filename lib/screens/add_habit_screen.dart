@@ -89,7 +89,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 filled: true,
                 fillColor: isDarkMode
                     ? theme.colorScheme.surface
-                    : theme.colorScheme.background,
+                    : theme.colorScheme.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -123,7 +123,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 filled: true,
                 fillColor: isDarkMode
                     ? theme.colorScheme.surface
-                    : theme.colorScheme.background,
+                    : theme.colorScheme.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -143,7 +143,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               ),
               dropdownColor: isDarkMode
                   ? theme.colorScheme.surface
-                  : theme.colorScheme.background,
+                  : theme.colorScheme.surface,
               style: TextStyle(color: theme.colorScheme.onSurface),
               items: ['Harian', 'Mingguan', 'Bulanan']
                   .map((freq) => DropdownMenuItem(

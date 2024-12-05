@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/finance_provider.dart';
 import 'package:intl/intl.dart';
-import '../theme/app_theme.dart';
 import 'dart:math';
 import 'wave_painter.dart';
-import '../services/finance_service.dart';
 
 class FinanceSummaryCard extends StatefulWidget {
   const FinanceSummaryCard({super.key});

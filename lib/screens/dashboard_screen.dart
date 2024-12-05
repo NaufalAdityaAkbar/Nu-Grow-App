@@ -24,7 +24,7 @@ class DashboardScreen extends StatelessWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Container(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -34,7 +34,7 @@ class DashboardScreen extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(32),
                   bottomRight: Radius.circular(32),
                 ),
@@ -44,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildGreeting(context),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     _buildQuickStats(),
                   ],
                 ),
@@ -52,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
           SliverPadding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 AnimatedCard(
@@ -60,11 +60,11 @@ class DashboardScreen extends StatelessWidget {
                   offsetY: 30,
                   child: HeroCard(
                     tag: 'finance_summary',
-                    child: FinanceSummaryCard(),
+                    child: const FinanceSummaryCard(),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FinanceStatsScreen(),
+                        builder: (context) => const FinanceStatsScreen(),
                       ),
                     ),
                   ),
@@ -75,11 +75,11 @@ class DashboardScreen extends StatelessWidget {
                   offsetY: 30,
                   child: HeroCard(
                     tag: 'habit_summary',
-                    child: HabitSummaryCard(),
+                    child: const HabitSummaryCard(),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HabitTrackerScreen(),
+                        builder: (context) => const HabitTrackerScreen(),
                       ),
                     ),
                   ),

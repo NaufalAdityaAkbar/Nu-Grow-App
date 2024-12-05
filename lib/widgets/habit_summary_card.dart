@@ -4,7 +4,6 @@ import '../providers/habit_provider.dart';
 import '../theme/app_theme.dart';
 import '../screens/add_habit_screen.dart';
 import '../screens/habit_tracker_screen.dart';
-import '../providers/navigation_provider.dart';
 
 
 class HabitSummaryCard extends StatelessWidget {

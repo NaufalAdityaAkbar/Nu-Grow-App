@@ -30,7 +30,7 @@ class ParallaxBackground extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: colors,
-                  stops: [0, 1],
+                  stops: const [0, 1],
                   transform: GradientRotation(offset / 1000),
                 ),
               ),

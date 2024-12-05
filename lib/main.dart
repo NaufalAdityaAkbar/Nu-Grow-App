@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/finance_stats_screen.dart';
 import 'screens/habit_tracker_screen.dart';
@@ -16,22 +15,21 @@ import 'screens/splash_screen.dart';
 import 'services/api_service.dart';
 import 'services/finance_service.dart';
 import 'services/habit_service.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'providers/auth_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:nugrow/providers/auth_provider.dart' as local_auth_provider;
+import 'screens/login_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await initializeDateFormatting('id_ID', null);
-  Intl.defaultLocale = 'id_ID';
-  
-  await NotificationService.initialize();
   
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -47,8 +45,8 @@ void main() async {
         ChangeNotifierProvider<NavigationProvider>(
           create: (_) => NavigationProvider(),
         ),
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(),
+        ChangeNotifierProvider<local_auth_provider.AuthProvider>(
+          create: (_) => local_auth_provider.AuthProvider(),
         ),
       ],
       child: const MyApp(),
@@ -61,8 +59,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+    return Consumer2<ThemeProvider, local_auth_provider.AuthProvider>(
+      builder: (context, themeProvider, authProvider, child) {
         return MaterialApp(
           title: 'Finance & Habit Tracker',
           theme: AppTheme.lightTheme,
@@ -89,6 +87,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HabitTrackerScreen(),
     SettingsScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || !user.emailVerified) {
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

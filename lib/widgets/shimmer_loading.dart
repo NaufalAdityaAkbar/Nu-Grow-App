@@ -56,17 +56,17 @@ class ShimmerList extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: 3,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+            return const Padding(
+              padding: EdgeInsets.only(bottom: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const ShimmerLoading(
+                  ShimmerLoading(
                     height: 16,
                     width: 150,
                   ),
-                  const SizedBox(height: 8),
-                  const ShimmerLoading(
+                  SizedBox(height: 8),
+                  ShimmerLoading(
                     height: 12,
                     width: 200,
                   ),

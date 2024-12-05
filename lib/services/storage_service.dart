@@ -4,10 +4,10 @@ import '../models/finance_entry.dart';
 import '../models/habit.dart';
 
 class StorageService {
-  static final String _financeKey = 'finance_entries';
-  static final String _habitsKey = 'habits';
-  static final String _budgetKey = 'monthly_budget';
-  static final String _settingsKey = 'app_settings';
+  static const String _financeKey = 'finance_entries';
+  static const String _habitsKey = 'habits';
+  static const String _budgetKey = 'monthly_budget';
+  static const String _settingsKey = 'app_settings';
   
   static SharedPreferences? _prefs;
   

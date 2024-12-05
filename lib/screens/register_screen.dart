@@ -4,9 +4,19 @@ import '../widgets/animated_card.dart';
 import '../main.dart';
 import '../services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import '../widgets/verification_dialog.dart';
+import 'package:nugrow/providers/auth_provider.dart' as local_auth_provider;
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String? initialEmail;
+  final String? initialPassword;
+
+  const RegisterScreen({
+    super.key,
+    this.initialEmail,
+    this.initialPassword,
+  });
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -21,46 +31,166 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   final _authService = AuthService();
+  Timer? _timer;
+  bool _isLoading = false;
+  Timer? _verificationTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Isi form dengan data dari login jika ada
+    if (widget.initialEmail != null) {
+      _emailController.text = widget.initialEmail!;
+    }
+    if (widget.initialPassword != null) {
+      _passwordController.text = widget.initialPassword!;
+      _confirmPasswordController.text = widget.initialPassword!;
+    }
+    // Listen untuk perubahan status auth
+    _authService.authStateChanges.listen((User? user) {
+      if (user != null) {
+        // Mulai timer untuk mengecek status verifikasi setiap 3 detik
+        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+          final isVerified = await _authService.checkEmailVerified();
+          if (isVerified && mounted) {
+            _timer?.cancel(); // Hentikan timer
+            
+            if (mounted) {
+              // Gunakan pushAndRemoveUntil untuk membersihkan stack navigasi
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+                (route) => false, // Hapus semua route sebelumnya
+              );
+            }
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Pastikan timer dibersihkan saat widget di-dispose
+    _verificationTimer?.cancel();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isLoading = true);
     try {
-      final success = await _authService.registerWithEmailPassword(
+      final (success, status) = await _authService.registerWithEmailPassword(
         _emailController.text,
         _passwordController.text,
       );
 
-      if (success && mounted) {
-        // Simpan status login
-        await _authService.saveLoginStatus(true);
-        
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+      if (!mounted) return;
+
+      if (success) {
+        switch (status) {
+          case 'need_verification':
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => VerificationDialog(
+                email: _emailController.text,
+                onResendEmail: () async {
+                  await _authService.resendVerificationEmail();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Email verifikasi telah dikirim ulang'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+            break;
+          default:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Terjadi kesalahan: $status'),
+                backgroundColor: Colors.red,
+              ),
+            );
+        }
+      } else {
+        String message;
+        switch (status) {
+          case 'email_exists':
+            message = 'Email sudah terdaftar';
+            break;
+          case 'weak_password':
+            message = 'Password terlalu lemah';
+            break;
+          case 'invalid_email':
+            message = 'Format email tidak valid';
+            break;
+          default:
+            message = 'Gagal mendaftar: $status';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mendaftar: ${e.toString()}')),
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
     try {
-      final success = await _authService.signInWithGoogle();
+      final userCredential = await _authService.signInWithGoogle();
 
-      if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
+      if (!mounted) return;
+
+      if (userCredential != null) {
+        // Langsung navigasi ke MainNavigationScreen tanpa verifikasi
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal mendaftar dengan Google'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal mendaftar: ${e.toString()}')),
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -416,7 +546,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       width: double.infinity,
       height: 55,
       child: OutlinedButton.icon(
-        icon: Icon(Icons.g_mobiledata, size: 24),
+        icon: const Icon(Icons.g_mobiledata, size: 24),
         label: const Text(
           'Daftar dengan Google',
           style: TextStyle(

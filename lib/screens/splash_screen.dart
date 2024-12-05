@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart' as local_auth_provider;
 import '../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,52 +44,41 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutBack),
     );
 
-    _controller.forward().then((_) {
-      _checkAuthAndNavigate();
+    _controller.forward().then((_) async {
+      await Future.delayed(const Duration(seconds: 2));
+      
+      if (mounted) {
+        _checkAuthAndNavigate();
+      }
     });
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Tunggu sebentar untuk memastikan Firebase Auth sudah diinisialisasi
-    await Future.delayed(const Duration(seconds: 1));
-    
-    final authProvider = Provider.of<local_auth_provider.AuthProvider>(context, listen: false);
-    final currentUser = FirebaseAuth.instance.currentUser;
-    
-    if (currentUser != null && await _authService.isLoggedIn()) {
-      // Jika user sudah login dan tersimpan di SharedPreferences
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final isLoggedIn = currentUser != null && await _authService.isLoggedIn();
+      
+      if (!mounted) return;
+
+      final route = PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            isLoggedIn ? const MainNavigationScreen() : const LoginScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 800),
+      );
+
+      Navigator.pushReplacement(context, route);
+    } catch (e) {
+      print('Error in splash navigation: $e');
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const MainNavigationScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      }
-    } else {
-      // Jika belum login
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const LoginScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     }
@@ -119,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                     opacity: 0.1 * _fadeAnimation.value,
                     child: Transform.rotate(
                       angle: index * math.pi / 10 * _rotateAnimation.value,
-                      child: Icon(
+                      child: const Icon(
                         Icons.attach_money,
                         size: 40,
                         color: Colors.white,
@@ -168,7 +158,7 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ],
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.account_balance_wallet,
                             size: 80,
                             color: AppTheme.primaryColor,

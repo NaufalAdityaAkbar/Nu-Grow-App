@@ -1,9 +1,3 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../models/finance_entry.dart';
-import '../models/habit.dart';
-import '../models/finance_category.dart';
-import '../models/habit.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:5000/api';

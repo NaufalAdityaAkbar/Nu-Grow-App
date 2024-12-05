@@ -8,6 +8,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../providers/auth_provider.dart';
+import 'dart:async';
+import '../widgets/verification_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,6 +25,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  Timer? _timer;
+  Timer? _verificationTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen untuk perubahan status auth
+    _authService.authStateChanges.listen((User? user) {
+      if (user != null && mounted) {
+        // Mulai timer untuk mengecek status verifikasi setiap 3 detik
+        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+          if (!mounted) {
+            timer.cancel();
+            return;
+          }
+
+          final isVerified = await _authService.checkEmailVerified();
+          if (isVerified && mounted) {
+            _timer?.cancel(); // Hentikan timer
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MainNavigationScreen()),
+            );
+          }
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       AnimatedCard(
                         child: Container(
                           width: double.infinity,
-                          constraints: BoxConstraints(
+                          constraints: const BoxConstraints(
                             maxWidth: 450,
                           ),
                           padding: EdgeInsets.all(size.width * 0.05),
@@ -151,6 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         if (value == null || value.isEmpty) {
                                           return 'Email tidak boleh kosong';
                                         }
+                                        if (!value.contains('@')) {
+                                          return 'Email tidak valid';
+                                        }
                                         return null;
                                       },
                                     ),
@@ -163,6 +197,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Password tidak boleh kosong';
+                                        }
+                                        if (value.length < 6) {
+                                          return 'Password minimal 6 karakter';
                                         }
                                         return null;
                                       },
@@ -281,10 +318,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginButton(ThemeData theme) {
-    final size = MediaQuery.of(context).size;
     return Container(
       width: double.infinity,
-      height: size.height * 0.07,
+      height: 55,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: LinearGradient(
@@ -302,16 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const MainNavigationScreen(),
-              ),
-            );
-          }
-        },
+        onPressed: _handleLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -319,10 +346,10 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(15),
           ),
         ),
-        child: Text(
+        child: const Text(
           'Masuk',
           style: TextStyle(
-            fontSize: size.width * 0.045,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -360,32 +387,121 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _handleGoogleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return;
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+    setState(() => _isLoading = true);
+    try {
+      final (success, status) = await _authService.signInWithEmailPassword(
+        _emailController.text,
+        _passwordController.text,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      if (!mounted) return;
 
-      if (mounted) {
-        // Simpan status login
-        await _authService.saveLoginStatus(true);
-
+      if (success) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+        );
+      } else {
+        switch (status) {
+          case 'need_verification':
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => VerificationDialog(
+                email: _emailController.text,
+                onResendEmail: () async {
+                  await _authService.resendVerificationEmail();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Email verifikasi telah dikirim ulang'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+            break;
+          case 'register_first':
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Email belum terdaftar. Mengarahkan ke halaman registrasi...'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+            // Tunggu sebentar sebelum navigasi
+            await Future.delayed(const Duration(seconds: 2));
+            if (!mounted) return;
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterScreen(
+                  initialEmail: _emailController.text,
+                  initialPassword: _passwordController.text,
+                ),
+              ),
+            );
+            break;
+          case 'wrong_password':
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Password salah'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            break;
+          default:
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Gagal masuk. Silakan coba lagi.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    try {
+      final userCredential = await _authService.signInWithGoogle();
+      if (userCredential != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal masuk dengan Google'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal masuk: ${e.toString()}')),
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -419,31 +535,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _signInWithEmailPassword() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-    try {
-      final success = await _authService.signInWithEmailPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-      
-      if (success && mounted) {
-        // Simpan status login
-        await _authService.saveLoginStatus(true);
-        
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _verificationTimer?.cancel();
+    super.dispose();
   }
 }

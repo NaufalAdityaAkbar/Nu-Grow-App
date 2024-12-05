@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/habit.dart';
-import '../widgets/habit_card.dart';
 import '../providers/habit_provider.dart';
 import 'add_habit_screen.dart';
-import '../theme/app_theme.dart';
 import '../widgets/animated_card.dart';
-import '../widgets/parallax_background.dart';
 
 class HabitTrackerScreen extends StatefulWidget {
   final bool showBackButton;

@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
- import 'firebase_options.dart';
+import 'firebase_options.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -50,24 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB7Mbwkt58izV2pdzpWlpyGKLNo28F85ho',
-    appId: '1:1060322466630:android:d05e0cf3bc9a93ceb92347',
-    messagingSenderId: '1060322466630',
-    projectId: 'newsapp-4ea2d',
-    databaseURL: 'https://newsapp-4ea2d-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'newsapp-4ea2d.firebasestorage.app',
+    apiKey: 'AIzaSyAVU0Hr-iznLcKsEfiaHF_9YmbTqL1rtk4',
+    appId: '1:712988839334:android:a128f0cc82f6309f00d367',
+    messagingSenderId: '712988839334',
+    projectId: 'nugrowapp',
+    storageBucket: 'nugrowapp.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA3FJRiMA1D5c0otsSpoTNw3IDFBH4M_q4',
-    appId: '1:1060322466630:ios:66677bd3f63174b7b92347',
-    messagingSenderId: '1060322466630',
-    projectId: 'newsapp-4ea2d',
-    databaseURL: 'https://newsapp-4ea2d-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'newsapp-4ea2d.firebasestorage.app',
-    androidClientId: '1060322466630-7b3unkhmg96f4pvkhu62uo6g0q9k7ugc.apps.googleusercontent.com',
-    iosClientId: '1060322466630-bqfnnuio3bqlnao896ekg6dplv00qqus.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDSo1h_cNTNdBFVJVe9NSdvXUI6GJtwl1E',
+    appId: '1:712988839334:ios:1d5d04c8203e208b00d367',
+    messagingSenderId: '712988839334',
+    projectId: 'nugrowapp',
+    storageBucket: 'nugrowapp.firebasestorage.app',
+    iosClientId: '712988839334-0ofqqbeh4da8b3c4bu8mach7qb61m0ml.apps.googleusercontent.com',
     iosBundleId: 'com.example.nugrow',
   );
-
 }

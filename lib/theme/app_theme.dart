@@ -20,7 +20,7 @@ class AppTheme {
       seedColor: primaryColor,
       secondary: secondaryColor,
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
@@ -33,11 +33,11 @@ class AppTheme {
     ),
     cardTheme: CardTheme(
       elevation: 8,
-      shadowColor: Color(0x1A000000),
+      shadowColor: const Color(0x1A000000),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -71,12 +71,12 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: darkBgColor,
-    colorScheme: ColorScheme.dark(
+    colorScheme: const ColorScheme.dark(
       primary: primaryColor,
       secondary: secondaryColor,
       surface: darkCardColor,
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
